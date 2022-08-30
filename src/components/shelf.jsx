@@ -25,7 +25,7 @@ class Shelf extends React.Component {
                                             }}
                                         ></div>
                                         <div className="book-shelf-changer">
-                                            <select value={books.Shelf} onChange={e => this.props.changeShelf(books, e.target.value)} >
+                                        <select value={books.shelf} onChange={e => this.props.changeShelf(books, e.target.value)} >
                                                 <option value="none" disabled>
                                                     Move to...
                                                 </option>
@@ -39,7 +39,7 @@ class Shelf extends React.Component {
                                         </div>
                                     </div>
                                     <div className="book-title">{books.title}</div>
-                                    <div className="book-authors">{books.author}</div>
+                                    <div className="book-authors">{books.authors}</div>
                                 </div>
                             </li>
                         ))}

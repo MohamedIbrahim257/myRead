@@ -23,10 +23,6 @@ class Shelves extends React.Component {
                 </div>
 
             </div>
-
-
-
-
         )
 
     }
