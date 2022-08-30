@@ -1,11 +1,11 @@
 import React from "react";
 
-const Search = ({ handleSearch, search, booksFormSearch }) => {
+const Search = ({ handleSearch, search, booksFormSearch , changeShelf}) => {
     return (
         <div className="search-books">
             <div className="search-books-bar">
                 <a
-                href="./Home"
+                href="/"
                     className="close-search"
                     // onClick={() => this.props.showSearchPage(false)}
                 >
@@ -21,7 +21,8 @@ const Search = ({ handleSearch, search, booksFormSearch }) => {
             </div>
             <div className="search-books-results">
            
-                {booksFormSearch.map((book) => (
+                {booksFormSearch.map((book) => ( 
+
                     <div key={book.id}>
                         <div className="book">
                             <div className="book-top">
@@ -35,7 +36,7 @@ const Search = ({ handleSearch, search, booksFormSearch }) => {
                                     }}
                                 ></div>
                                 <div className="book-shelf-changer">
-                                    <select value={book.Shelf} onChange={e => this.props.changeShelf(book, e.target.value)} >
+                                    <select value={book.Shelf} onChange={e => changeShelf(book, e.target.value)} >
                                         <option value="none" disabled>
                                             Move to...
                                         </option>

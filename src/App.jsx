@@ -45,14 +45,14 @@ class App extends React.Component {
       search: event.target.value
     })
     console.log(this.state.search)
-    this.handleBooksSearch(this.state.search)
+    this.handleBooksSearch(this.state.search)  
   }
 
   handleBooksSearch = async (search) => {
     await bookAPI.search(search).then((resp) => {
 
       this.setState({
-        booksFormSearch: resp
+        booksFormSearch: resp  
       })
 
     })
@@ -64,20 +64,10 @@ class App extends React.Component {
       <BrowserRouter>
         <Routes>
 
-
-
           <Route path="/search" element={<Search handleSearch={this.handleSearch} changeShelf={this.changeBookShelf} search={this.state.search} booksFormSearch={this.state.booksFormSearch} ></Search>} ></Route>
 
-          <Route exact path="/Home" element={<Shelves allbooks={this.state.books} changeShelf={this.changeBookShelf} ></Shelves>} >
+          <Route exact path="/" element={<Shelves allbooks={this.state.books} changeShelf={this.changeBookShelf} ></Shelves>} >
           </Route>
-
-
-
-
-
-
-
-
 
         </Routes>
       </BrowserRouter>
