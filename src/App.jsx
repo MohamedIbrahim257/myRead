@@ -13,7 +13,7 @@ class App extends React.Component {
     showSearchPage: false,
     books: [],
     search: '',
-    booksFormSearch: []
+    booksFormSearch: [],
   };
 
   updateSearchPageState = (state) => {
@@ -21,7 +21,7 @@ class App extends React.Component {
   }
 
   componentDidMount() {
-    bookAPI.getAll().then((resp) => this.setState({ books: resp }))
+   bookAPI.getAll().then((resp) => this.setState({ books: resp }))
   }
 
   changeBookShelf = async (book, shelf) => {
@@ -35,6 +35,7 @@ class App extends React.Component {
     await bookAPI.getAll().then((resp) => {
       this.setState({
         books: resp
+        
       })
     })
 
@@ -51,10 +52,18 @@ class App extends React.Component {
   handleBooksSearch = async (search) => {
     await bookAPI.search(search).then((resp) => {
 
-      this.setState({
-        booksFormSearch: resp  
-      })
+      if(resp && !resp.error){
+        this.setState({
+          booksFormSearch: resp  
+        })
+      }else{
 
+          this.setState({
+            books: resp
+          })
+     
+      }
+      console.log(this.state.booksFormSearch)
     })
   }
 
