@@ -1,90 +1,120 @@
-import "./App.css";
-import Shelves from "./components/shelves";
-import Search from "./components/search";
-import *as bookAPI from "./bookAPI"
-import React from "react";
+
+
+import React, { useState, useEffect } from 'react'
 import { Route, BrowserRouter, Routes } from "react-router-dom";
+import Header from './components/Header'
+import * as BooksAPI from './bookAPI'
+import './App.css'
+import Shelves from './components/shelves'
+import Book from './components/Book'
+import useQuery from './components/query'
+
+const BooksApp = () => {
+  const [books, setBooks] = useState([])
+  const [mapOfIdToBooks, setMapOfIdToBooks] = useState(new Map());
+
+  const [query, setQuery] = useState("");
+  const [searchBooks] = useQuery(query);
+  const [mergedBooks, setMergedBooks] = useState([]);
 
 
+  useEffect(() => {
 
-class App extends React.Component {
-
-  state = {
-    showSearchPage: false,
-    books: [],
-    search: '',
-    booksFormSearch: [],
-  };
-
-  updateSearchPageState = (state) => {
-    this.setState({ showSearchPage: state })
-  }
-
-  componentDidMount() {
-   bookAPI.getAll().then((resp) => this.setState({ books: resp }))
-  }
-
-  changeBookShelf = async (book, shelf) => {
-    // this.setState({
-    //   books : this.state.books.map( b => {
-    //     b.id === book.id ? (b.shelf = shelf) : b;
-    //     return b
-    //   })
-    // })
-    await bookAPI.update(book, shelf)
-    await bookAPI.getAll().then((resp) => {
-      this.setState({
-        books: resp
-        
-      })
-    })
-
-  }
-
-  handleSearch = async (event) => {
-    await this.setState({
-      search: event.target.value
-    })
-    console.log(this.state.search)
-    this.handleBooksSearch(this.state.search)  
-  }
-
-  handleBooksSearch = async (search) => {
-    await bookAPI.search(search).then((resp) => {
-
-      if(resp && !resp.error){
-        this.setState({
-          booksFormSearch: resp  
-        })
-      }else{
-
-          this.setState({
-            books: resp
-          })
-     
+    BooksAPI.getAll()
+      .then(data => {
+        setBooks(data)
+        setMapOfIdToBooks(createMapOfBooks(data))
       }
-      console.log(this.state.booksFormSearch)
+      );
+  }, [])
+
+
+  useEffect(() => {
+
+    const combined = searchBooks.map(book => {
+      if (mapOfIdToBooks.has(book.id)) {
+        return mapOfIdToBooks.get(book.id);
+      } else {
+        return book;
+      }
     })
+    setMergedBooks(combined);
+  }, [searchBooks])
+
+
+  const createMapOfBooks = (books) => {
+    const map = new Map();
+    books.map(book => map.set(book.id, book));
+    return map;
   }
 
-  render() {
-    return (
+  const updateBookShelf = (book, whereTo) => {
+    const updatedBooks = books.map(b => {
+      if (b.id === book.id) {
+        book.shelf = whereTo;
+        return book;
+      }
+      return b;
+    })
+    if (!mapOfIdToBooks.has(book.id)) {
+      book.shelf = whereTo;
+      updatedBooks.push(book)
+    }
+    setBooks(updatedBooks);
+    BooksAPI.update(book, whereTo);
+  }
 
+  return (
+    <div className="app">
       <BrowserRouter>
+
         <Routes>
 
-          <Route path="/search" element={<Search handleSearch={this.handleSearch} changeShelf={this.changeBookShelf} search={this.state.search} booksFormSearch={this.state.booksFormSearch} ></Search>} ></Route>
+   
+          <Route path="/search" element={ <div className="search-books">
+              <div className="search-books-bar">
+              
+                  <a href='/' className="close-search">Close</a>
+               
+                <div className="search-books-input-wrapper">
 
-          <Route exact path="/" element={<Shelves allbooks={this.state.books} changeShelf={this.changeBookShelf} ></Shelves>} >
+                  <input type="text" placeholder="Search by title or author" value={query} onChange={(e) => setQuery(e.target.value)} />
+                </div>
+              </div>
+              <div className="search-books-results">
+                <ol className="books-grid">
+                  {mergedBooks.map(b => (
+                    <li key={b.id}>
+                      <Book book={b} changeBookShelf={updateBookShelf} />
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            </div>} >
+
           </Route>
 
+
+          <Route path="/" element={ <div className="list-books">
+            {console.log("SEARCH", searchBooks)}
+
+              <Header />
+              <div className="list-books-content">
+                <Shelves books={books} updateBookShelf={updateBookShelf} />
+              </div>
+              <div className="open-search">
+               
+                  <a href='/search' >Add a book</a>
+             
+              </div>
+            </div>}>
+
+          </Route>
         </Routes>
       </BrowserRouter>
-
-
-    );
-  }
+    </div>
+  )
 
 }
 
-export default App;
+export default BooksApp
