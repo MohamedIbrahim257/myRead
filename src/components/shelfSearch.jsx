@@ -7,7 +7,7 @@ export default class shelfSearch extends Component {
             <div>
                  <div className="search-books-results">
                 {
-                this.props.booksFormSearch.map((book) => ( <Shelf  book={book}></Shelf> ))
+                this.props.booksFormSearch.map((book) => ( <Shelf key={b.id} book={book}></Shelf> ))
                 }
 
             </div>
